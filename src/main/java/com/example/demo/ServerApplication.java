@@ -76,7 +76,7 @@ public class ServerApplication extends HttpServlet {
 
     //Добавить координаты
     @RequestMapping(value = "/post/coords", method = RequestMethod.POST)
-    public Void putCoords(@RequestPart int room, int x1, int y1, int x2, int y2, int[] color) {
+    public Void putCoords(@RequestPart int room, float x1, float y1, float x2, float y2, int[] color) {
         devices.get(rooms.get(room).deviceList.get(color[0] * colors.length + color[1])).coords = new Coords(x1, y1, x2, y2);
         System.out.println("Coords: " + x1 + "," + y1 + " " + x2 + "," + y2);
         return null;
@@ -165,6 +165,7 @@ public class ServerApplication extends HttpServlet {
         return (long) 0;
     }
 
+    //Скачать видео
     @GetMapping(value = "/download/{room}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public @ResponseBody
     byte[] getFile(@PathVariable("room") int room) {
@@ -172,6 +173,7 @@ public class ServerApplication extends HttpServlet {
         return rooms.get(room).video == null ? new byte[1] : rooms.get(room).video;
     }
 
+    //Загрузить видео на сервер
     @PostMapping(value = "/upload")
     public Void uploadVideo(@RequestPart("video") MultipartFile video, @RequestPart("room") int room) {
         System.out.println("Видео " + video.getOriginalFilename() + " в комнате " + room);
@@ -181,6 +183,20 @@ public class ServerApplication extends HttpServlet {
             e.printStackTrace();
         }
         return null;
+    }
+
+    //Поставить паузу || Продолжить воспроизведение
+    @PostMapping(value = "/post/pause")
+    public Void setPause(@RequestPart("room") int room, @RequestPart("pause") boolean pause) {
+        System.out.println((pause ? "Пауза " : "Воспроизведение ") + "в комнате " + room);
+        rooms.get(room).isPaused = pause;
+        return null;
+    }
+
+    //Получение массива цветов
+    @RequestMapping("/get/pause/{room}")
+    public Boolean getPause(@PathVariable("room") int room) {
+        return rooms.get(room).isPaused;
     }
 
     //Данные каждого гаджета
@@ -200,6 +216,7 @@ public class ServerApplication extends HttpServlet {
         public Long time, videoStart;
         public byte[] video;
         public int colorIndex1 = 0, colorIndex2 = 1;
+        public boolean isPaused = false;
 
         public RoomData() {
             deviceList = new LinkedList<>();
@@ -208,9 +225,9 @@ public class ServerApplication extends HttpServlet {
 
     //Класс координат
     private class Coords {
-        public Integer x1, y1, x2, y2;
+        public float x1, y1, x2, y2;
 
-        public Coords(int x1, int y1, int x2, int y2) {
+        public Coords(float x1, float y1, float x2, float y2) {
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;
