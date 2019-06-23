@@ -76,7 +76,7 @@ public class ServerApplication extends HttpServlet {
 
     //Добавить координаты
     @RequestMapping(value = "/post/coords", method = RequestMethod.POST)
-    public Void putCoords(@RequestPart int room, float x1, float y1, float x2, float y2, int[] color) {
+    public Void putCoords(@RequestPart int room, double x1, double y1, double x2, double y2, int[] color) {
         devices.get(rooms.get(room).deviceList.get(color[0] * colors.length + color[1])).coords = new Coords(x1, y1, x2, y2);
         System.out.println("Coords: " + x1 + "," + y1 + " " + x2 + "," + y2);
         return null;
@@ -225,9 +225,9 @@ public class ServerApplication extends HttpServlet {
 
     //Класс координат
     private class Coords {
-        public float x1, y1, x2, y2;
+        public double x1, y1, x2, y2;
 
-        public Coords(float x1, float y1, float x2, float y2) {
+        public Coords(double x1, double y1, double x2, double y2) {
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;
