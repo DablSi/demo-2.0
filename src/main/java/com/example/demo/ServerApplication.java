@@ -37,6 +37,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Добавить девайс
+    //Add device
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     public Integer putDevice(@RequestPart String device, Integer room, Long date) {
         if(rooms.containsKey(room) && rooms.get(room).time != null)
@@ -75,6 +76,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Добавить координаты
+    //Add coordinates
     @RequestMapping(value = "/post/coords", method = RequestMethod.POST)
     public Void putCoords(@RequestPart int room, double x1, double y1, double x2, double y2, int[] color) {
         devices.get(rooms.get(room).deviceList.get(color[0] * colors.length + color[1])).coords = new Coords(x1, y1, x2, y2);
@@ -84,6 +86,7 @@ public class ServerApplication extends HttpServlet {
 
 
     //Получить координаты
+    //Get coordinates
     @RequestMapping("/get/coords/{device}")
     public Coords getCoords(@PathVariable("device") String device) {
         Coords coords = devices.get(device).coords;
@@ -101,6 +104,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Получить время запуска
+    //Get video start time
     @RequestMapping("/get/{device}")
     public Long getTime(@PathVariable("device") String device) {
         if (devices.containsKey(device)) {
@@ -115,18 +119,21 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Получить цвет
+    //Get color
     @RequestMapping("/get/color/{device}")
     public int[] getColor(@PathVariable("device") String device) {
         return devices.get(device).colors;
     }
 
     //Получение номера комнаты
+    //Get room number
     @RequestMapping("/get/room")
     public Integer getRoom() {
         return rooms.size() + 1;
     }
 
     //Получение индексов цветов
+    //Get colors` indexes
     @RequestMapping("/get/indexes/{room}")
     public int[] getIndexes(@PathVariable("room") int room) {
         int[] indexes = new int[2];
@@ -136,12 +143,14 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Получение массива цветов
+    //Get array of colors
     @RequestMapping("/get/colors")
     public int[] getColors() {
         return colors;
     }
 
     //Добавить время запуска видео
+    //Set time to start video
     @RequestMapping(value = "/post/startVideo", method = RequestMethod.POST)
     public Void putStartVideo(@RequestPart Integer room, Long date) {
         rooms.get(room).videoStart = date;
@@ -150,6 +159,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Получить время запуска видео
+    //Get time of video starting
     @RequestMapping("/get/startVideo/{device}")
     public Long getStartVideo(@PathVariable("device") String device) {
         if (devices.containsKey(device)) {
@@ -166,6 +176,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Скачать видео
+    //Download video
     @GetMapping(value = "/download/{room}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public @ResponseBody
     byte[] getFile(@PathVariable("room") int room) {
@@ -174,6 +185,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Загрузить видео на сервер
+    //Upload server
     @PostMapping(value = "/upload")
     public Void uploadVideo(@RequestPart("video") MultipartFile video, @RequestPart("room") int room) {
         System.out.println("Видео " + video.getOriginalFilename() + " в комнате " + room);
@@ -186,6 +198,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Поставить паузу || Продолжить воспроизведение
+    //Set pause or resume
     @PostMapping(value = "/post/pause")
     public Void setPause(@RequestPart("room") int room, @RequestPart("pause") boolean pause) {
         System.out.println((pause ? "Пауза " : "Воспроизведение ") + "в комнате " + room);
@@ -194,12 +207,14 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Получение массива цветов
+    //Get array of colors
     @RequestMapping("/get/pause/{room}")
     public Boolean getPause(@PathVariable("room") int room) {
         return rooms.get(room).isPaused;
     }
 
     //Данные каждого гаджета
+    //Phone`s data
     private class DeviceData {
         public Integer room;
         public int[] colors = new int[2];
@@ -211,6 +226,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Данные каждой комнаты
+    //Room`s data
     private class RoomData {
         public LinkedList<String> deviceList;
         public Long time, videoStart;
@@ -224,6 +240,7 @@ public class ServerApplication extends HttpServlet {
     }
 
     //Класс координат
+    //Class for coordinates
     private class Coords {
         public double x1, y1, x2, y2;
 
