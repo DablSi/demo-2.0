@@ -53,7 +53,7 @@ public class ServerApplication extends HttpServlet {
         } else {
             if (!rooms.get(room).deviceList.contains(device)) {
                 rooms.get(room).deviceList.addLast(device);
-                if (rooms.get(room).deviceList.size() <= colors.length + 1) {
+                if (rooms.get(room).deviceList.size() <= (colors.length * colors.length) - colors.length + 1) {
                     if (rooms.get(room).colorIndex2 == colors.length) {
                         rooms.get(room).colorIndex2 = 0;
                         rooms.get(room).colorIndex1++;
@@ -79,11 +79,12 @@ public class ServerApplication extends HttpServlet {
     //Add coordinates
     @RequestMapping(value = "/post/coords", method = RequestMethod.POST)
     public Void putCoords(@RequestPart int room, double x1, double y1, double x2, double y2, int[] color) {
+        if(color[0] > 0 && color[1] > color[0])
+            color[1]--;
         devices.get(rooms.get(room).deviceList.get(color[0] * colors.length + color[1])).coords = new Coords(x1, y1, x2, y2);
         System.out.println("Coords: " + x1 + "," + y1 + " " + x2 + "," + y2);
         return null;
     }
-
 
     //Получить координаты
     //Get coordinates
@@ -122,6 +123,7 @@ public class ServerApplication extends HttpServlet {
     //Get color
     @RequestMapping("/get/color/{device}")
     public int[] getColor(@PathVariable("device") String device) {
+        System.out.println(devices.get(device).colors[0] + " " + devices.get(device).colors[1]);
         return devices.get(device).colors;
     }
 
